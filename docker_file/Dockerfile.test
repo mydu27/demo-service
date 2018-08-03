@@ -1,0 +1,6 @@
+FROM gmirror/holoread-base:latest
+
+COPY . /app
+WORKDIR /app
+
+CMD nosetests -v --with-xunit --xunit-file=nosetests.xml --cover-package=holoread --with-xcoverage 

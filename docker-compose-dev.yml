@@ -1,0 +1,27 @@
+version: '2'
+
+services:
+  db:
+    image: mongo:3.4.6
+    environment:
+      - MONGO_LOG_DIR=/data/mongo/log
+    volumes:
+      - /home/deploy/data/mongo/db:/data/db
+      - /home/deploy/data/mongo/log:/data/mongo/log
+    ports:
+      - "27019:27017"
+    command: mongod --smallfiles --logpath=/data/mongo/log/mongo.log # --quiet
+
+  holoread:
+    build:
+      context: .
+      dockerfile: docker_file/Dockerfile.test
+    image: gmirror/holoread-service:dev
+    volumes:
+      - /home/deploy/.ssh/google-translate-keyfile.json:/data/google-translate-keyfile.json
+    command: bash -c "python3 -u run.py runserver -h 0.0.0.0 -p 8001 --thread"
+    ports:
+      - "8001:8001"
+    env_file: /home/deploy/envs/holoread-service.env
+    links:
+      - db
